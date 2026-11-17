@@ -33,6 +33,8 @@ REPORT_PAGE_DOC_LINKS = {
     "preferences": ("Human preferences guide", f"{DOCS_BASE_URL}/human_preferences/"),
     "judge": ("LLM-as-a-judge guide", f"{DOCS_BASE_URL}/llm_judge/"),
     "contamination": ("Benchmark tools guide", f"{DOCS_BASE_URL}/benchmark_tools/"),
+    "evaluation": ("Metrics guide", f"{DOCS_BASE_URL}/metrics/"),
+    "comparison": ("Model comparison guide", f"{DOCS_BASE_URL}/model_comparison/"),
 }
 
 

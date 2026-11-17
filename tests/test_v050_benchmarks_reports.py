@@ -253,6 +253,21 @@ def test_markdown_reports_link_to_the_documentation(tmp_path, capsys):
         assert "[Reading guide](https://lakshaychhaba0001-sys.github.io/openbench-ai/reading_a_report/)" in footer
         assert "[Glossary](https://lakshaychhaba0001-sys.github.io/openbench-ai/glossary/)" in footer
 
+    responses = ROOT / "examples/sample_responses.json"
+    for command, report, page_slug in (
+        (["evaluate", "--dataset", str(ROOT / "datasets/reasoning/sample.jsonl"), "--responses", str(responses),
+          "--output", str(tmp_path / "eval.md")], tmp_path / "eval.md", "metrics"),
+        (["compare", "--results", str(a), str(b), "--output", str(tmp_path / "cmp.md")], tmp_path / "cmp.md",
+         "model_comparison"),
+    ):
+        assert main(command) == 0
+        lines = report.read_text(encoding="utf-8").rstrip().splitlines()
+        assert lines[-2] == ""
+        footer = lines[-1]
+        assert f"https://lakshaychhaba0001-sys.github.io/openbench-ai/{page_slug}/" in footer
+        assert "[Reading guide](https://lakshaychhaba0001-sys.github.io/openbench-ai/reading_a_report/)" in footer
+        assert "[Glossary](https://lakshaychhaba0001-sys.github.io/openbench-ai/glossary/)" in footer
+
     prefs_dir = tmp_path / "prefs"
     assert main(["preferences", "create", "--results", str(a), str(b), "--output", str(prefs_dir)]) == 0
     key = json.loads((prefs_dir / "tasks.key.json").read_text(encoding="utf-8"))

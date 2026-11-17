@@ -384,7 +384,11 @@ class ReportGenerator:
         for lim in result.limitations:
             lines.append(f"- {lim}")
 
-        lines.extend(["", ReportGenerator.format_reproducibility_card_markdown(result), ""])
+        from openbench.reporting_v040 import report_doc_markdown
+
+        lines.extend(
+            ["", ReportGenerator.format_reproducibility_card_markdown(result), "", report_doc_markdown("evaluation"), ""]
+        )
         return "\n".join(lines)
 
     @staticmethod
@@ -528,6 +532,9 @@ class ReportGenerator:
                 "",
             ]
         )
+        from openbench.reporting_v040 import report_doc_markdown
+
+        lines.extend([report_doc_markdown("comparison"), ""])
         return "\n".join(lines)
 
     @staticmethod
