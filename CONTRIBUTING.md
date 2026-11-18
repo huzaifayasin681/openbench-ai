@@ -6,6 +6,8 @@ Thank you for your interest in contributing to **OpenBench AI**!
 
 OpenBench AI is maintained by its project owner. We welcome bug fixes, dataset expansions, evaluation metrics, provider adapters, and documentation improvements from the open-source community.
 
+Dependabot checks the GitHub Actions versions used in our workflows every week and groups all updates into a single pull request. The configuration lives in `.github/dependabot.yml`.
+
 ---
 
 ## 1. Setting Up Your Development Environment
