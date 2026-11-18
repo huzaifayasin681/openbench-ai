@@ -609,7 +609,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="v0.5.0: generate a dataset card (facts computed from the data, author sections left as TODO).",
     )
     card_parser.add_argument("dataset_path", type=str)
-    card_parser.add_argument("--format", choices=["markdown", "json", "html"], default="markdown")
+    card_parser.add_argument(
+        "--format",
+        choices=["markdown", "json", "html"],
+        default=None,
+        help="Card format. Default: chosen from the --output extension (.html/.htm, .json), otherwise markdown.",
+    )
     card_parser.add_argument("--output", type=str, default=None)
 
     serve_parser = subparsers.add_parser(
@@ -2316,8 +2321,12 @@ def _handle_dataset_card(args: argparse.Namespace) -> int:
     """`openbench dataset-card` (v0.5.0)."""
     from openbench.datacard import build_card, render_card
 
+    card_format = args.format
+    if card_format is None:
+        suffix = Path(args.output).suffix.lower() if args.output else ""
+        card_format = {".html": "html", ".htm": "html", ".json": "json"}.get(suffix, "markdown")
     card = build_card(args.dataset_path)
-    _write_or_print(render_card(card, args.format), args.output, f"Dataset card ({args.format})")
+    _write_or_print(render_card(card, card_format), args.output, f"Dataset card ({card_format})")
     return 0
 
 

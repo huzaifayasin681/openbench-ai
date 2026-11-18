@@ -183,6 +183,36 @@ def test_dataset_card_html_is_deterministic_and_escapes_provenance(tmp_path):
     assert document.count('<p class="banner">TODO (author):') == 4
     assert "<b>" not in document and "<script" not in document and "<link" not in document
 
+
+@pytest.mark.parametrize(
+    ("name", "expected"),
+    [("card.html", "html"), ("card.HTM", "html"), ("card.json", "json"), ("card.md", "markdown"),
+     ("card.markdown", "markdown"), ("card.txt", "markdown"), ("card", "markdown")],
+)
+def test_dataset_card_format_follows_output_extension(tmp_path, capsys, name, expected):
+    ds = ROOT / "datasets/reasoning/sample.jsonl"
+    out = tmp_path / name
+    assert main(["dataset-card", str(ds), "--output", str(out)]) == 0
+    assert out.read_text(encoding="utf-8") == render_card(build_card(ds), expected)
+    assert f"Dataset card ({expected}) written to: " in capsys.readouterr().out
+
+
+def test_dataset_card_stdout_without_output_stays_markdown(capsys):
+    ds = ROOT / "datasets/reasoning/sample.jsonl"
+    assert main(["dataset-card", str(ds)]) == 0
+    assert capsys.readouterr().out == render_card(build_card(ds))
+
+
+def test_dataset_card_explicit_format_wins_over_extension(tmp_path, capsys):
+    ds = ROOT / "datasets/reasoning/sample.jsonl"
+    out = tmp_path / "card.html"
+    assert main(["dataset-card", str(ds), "--format", "markdown", "--output", str(out)]) == 0
+    assert out.read_text(encoding="utf-8") == render_card(build_card(ds), "markdown")
+    assert "Dataset card (markdown) written to: " in capsys.readouterr().out
+    assert main(["dataset-card", str(ds), "--format", "html", "--output", str(tmp_path / "card.json")]) == 0
+    assert (tmp_path / "card.json").read_text(encoding="utf-8") == render_card(build_card(ds), "html")
+
+
 def test_dataset_card_licence_and_source_shared_mixed_missing(tmp_path, capsys):
     src = tmp_path / "qa.csv"
     src.write_text("question,answer\nWho wrote Hamlet?,Shakespeare\nCapital of Italy?,Rome\n", encoding="utf-8")
